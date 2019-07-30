@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<title>js在线录音录制MP3音频导出代码</title>
+<meta charset="utf-8" />
+
+    <script src="js/modernizr.custom.63321.js"></script>
+    <script src="js/jquery-1.12.0.min.js"></script>
+    <script src="js/rem.js"></script>
+
+    <link rel="stylesheet" href="css/style5.css">
+    <style>
+        html,body{
+            width: 100vw;
+            height: 100vh;
+        }
+        *{
+            touch-callout:none;
+            -webkit-touch-callout:none;
+            -ms-touch-callout:none;
+            -moz-touch-callout:none;
+        }
+        img{
+            user-select:none;
+            -webkit-user-select:none;
+            -ms-user-select:none;
+            -moz-user-select:none;
+        }
+        .btns{
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+        .btn {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: #eee;
+            z-index: 1;
+        }
+
+        .btn input {
+            width: 100%;
+            height: 100%;
+            font: 20px/60px 'microsoft yahei';
+        }
+
+        .blackBoxSpeak {
+            width: 176px;
+            height: 176px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            background: url("./img/ic_record@2x.png") no-repeat 28px 16px/65px 104px,
+            url("./img/ic_record_ripple@2x-9.png") no-repeat 111.2px 32px/28.8px 88px;
+
+            background: rgba(0, 0, 0, .7);
+            display: none;
+            border-radius: 12px;
+        }
+
+        .blackBoxSpeakConent {
+            font: 14.4px '微软雅黑 Light';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 12px;
+            display: block;
+            text-align: center;
+            width: 90%;
+            padding: 8px 0;
+            margin: auto;
+            color: #ffffff;
+            font-weight: 200;
+            border-radius: 4px;
+        }
+
+        .blackBoxPause {
+            width: 176px;
+            height: 176px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            background: url("./img/ic_record@2x.png") no-repeat 28px 16px/65px 104px,
+            url("./img/ic_record_ripple@2x-9.png") no-repeat 111.2px 32px/28.8px 88px;
+
+            background: rgba(0, 0, 0, .7);
+            display: none;
+            border-radius: 12px;
+        }
+
+        .blackBoxPauseContent {
+            font: 14.4px '微软雅黑 Light';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 12px;
+            display: block;
+            text-align: center;
+            width: 90%;
+            padding: 8px 0;
+            margin: auto;
+            color: #ffffff;
+            font-weight: 200;
+            border-radius: 4px;
+        }
+        .shade{
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0.3;
+            background: #333333;
+            z-index: 2;
+        }
+        .teacher{
+            position: relative;
+            left: 50%;
+            margin-left: -3rem;
+            width: 6rem;
+            height: 6rem;
+            background: url("./img/teacher.gif") no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
+
+
+</head>
+<body>
+<!--<script src="/demos/googlegg.js"></script>-->
+<div class="shade"></div>
+<section class="main clearfix">
+
+    <div class="fleft">
+
+        <select id="cd-dropdown" class="cd-select">
+
+            <option value="0" selected>cat</option>
+
+            <option value="1" class="icon-chrome">pig</option>
+
+            <option value="2" class="icon-safari">dog</option>
+
+            <option value="3" class="icon-IE">mouse</option>
+
+            <option value="4" class="icon-firefox">bird</option>
+
+            <option value="5" class="icon-opera">snake</option>
+
+        </select>
+
+    </div>
+
+</section>
+
+<script>
+    $(function () {
+        $('.shade').css({'width':$(window).width(),'height':$(window).height()});
+    })
+</script>
+
+<!--<div class="teacher">-->
+
+<!--</div>-->
+
+<!--<div class="btns">-->
+    <!--<button onclick="funStart(this);" id="btnStart" disabled>录制</button>-->
+    <!--<button onclick="funStop(this);" id="btnStop" disabled>停止</button>-->
+    <!--&lt;!&ndash;<button onclick="funUpload(this);" id="btnUpload" disabled>上传</button>&ndash;&gt;-->
+<!--</div>-->
+
+<!--<h4>调试信息：</h4>-->
+<!--录完的音频放在这里-->
+<!--<div id="recordingslist"></div>-->
+
+<div class="btn">
+    <input type="button" id="bt_recoding" value="按住 说话">
+</div>
+
+<!-- 中间黑框 录音状态 -->
+<div class="blackBoxSpeak">
+    <p class="blackBoxSpeakConent">手指上划，取消发送</p>
+</div>
+
+<!-- 中间黑框 暂停状态 -->
+<div class="blackBoxPause">
+    <p class="blackBoxPauseContent" style="background: red">松开手指， 取消发送</p>
+</div>
+
+
+<!--录音依赖-->
+<script src="js/recordmp3.js"></script>
+
+<!--长按录音事件,发送录音接收返回数据文件-->
+<script src="js/recorder-event.js"></script>
+
+<!--下拉框-->
+<script src="js/jquery.dropdown.js"></script>
+<script type="text/javascript">
+    $( function() {
+
+        $( '#cd-dropdown' ).dropdown( {
+
+            gutter : 5,
+
+            stack : false,
+
+            slidingIn : 100
+
+        });
+
+
+
+    });
+
+</script>
+
+
+</body>
+</html>
